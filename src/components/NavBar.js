@@ -40,16 +40,16 @@ const NavBar = () => {
             <Navbar bg="primary" variant="dark">
                 <Container>
                     <Nav className="me-auto my-2">
-                        <Button variant="primary" onClick={mostarInicio}>
+                        <Button variant="primary" onClick={mostarInicio} className="mx-1">
                             Inicio
             </Button>{" "}
-                        <Button variant="primary" onClick={mostarSimulador}>
+                        <Button variant="primary" onClick={mostarSimulador} className="mx-1">
                             Simulador
             </Button>{" "}
-                        <Button variant="primary" onClick={mostarAcerca}>
+                        <Button variant="primary" onClick={mostarAcerca} className="mx-1">
                             Acerca de la empresa
             </Button>{" "}
-                        <Button variant="primary" onClick={mostarNosotros}>
+                        <Button variant="primary" onClick={mostarNosotros} className="mx-1">
                             Quienes Somos
             </Button>{" "}
                     </Nav>
