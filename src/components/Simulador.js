@@ -8,98 +8,96 @@ import axios from 'axios';
 
 const Simulador = () => {
 
-  const [tiempo, obtenerTiempo] = useState(0)
-  const [temperatura, obtenerTemperatura] = useState(0)
-  const [leche, obtenerLeche] = useState(0)
-  const [bacteria, obtenerBacteria] = useState("")
-  const [consistencia, obtenerConsistencia] = useState("")
-  const [perdida, obtenerPerdida] = useState(0)
-  const [gananciaTotales, obtenerGananciaTotales] = useState(0)
-  const [perdidasTotales, obtenerPerdidasTotales] = useState(0)
-  const [frascosTotales, obtenerFrascosTotales] = useState(0)
+  const [tiempo,setTiempo] = useState(0)
+  const [temperatura,setTemperatura] = useState(0)
+  const [leche,setLeche] = useState(0)
+  const [bacteria,setBacteria] = useState("")
+  const [consistencia,setConsistencia] = useState("")
+  const [perdida,setPerdida] = useState(0)
+  const [gananciaTotales,setGananciaTotales] = useState(0)
+  const [perdidasTotales,setPerdidasTotales] = useState(0)
+  const [frascosTotales,setFrascosTotales] = useState(0)
   const [aumentarEmpleados, aumentarCantEmpleados] = useState("")
+  const urlBase = "https://localhost:44342/api/"
 
-  const getPoisson = (a) => {
-    const url = `PseudoAleatoreos/Poisson?a=${a}`;
-    const resultado = axios.get(url);
-    return resultado
+  const getPoisson = async (a) => {
+    const url = urlBase+`PseudoAleatoreos/Poisson?a=${a}`;
+    const resultado = await axios(url);
+    return resultado.data.number
+  }   
+  const getRamdomNumber = async (a, n, c, m) => {
+    const url = urlBase+`PseudoAleatoreos/GetRandomNumber?a=${a}&n=${n}&c=${c}&m=${m}`
+    const resultado =await axios(url);
+    return resultado.data.number
   }
-  const getRamdomNumber = (a, n, c, m) => {
-    const url = `PseudoAleatoreos/GetRandomNumber?a=${a}&n=${n}&c=${c}&m=${m}`
-    const resultado = axios.get(url);
-    return resultado
+  const getNormal = async (media, desvio) => {
+    const url = urlBase+`PseudoAleatoreos/Normal?media=${media}&devio=${desvio}`
+    const resultado = await axios(url);
+    return resultado.data.number
   }
-  const getNormal = (media, desvio) => {
-    const url = `PseudoAleatoreos/Normal?media=${media}&devio=${desvio}`
-    const resultado = axios.get(url);
-    return resultado
-  }
-  const getUniforme = (a, b, entero, u) => {
-    const url = `PseudoAleatoreos/Uniforme?a=${a}&b=${b}&isInt=${entero}&u=${u}`
-    const resultado = axios.get(url);
-    return resultado
+  const getUniforme = async (a, b, entero, u) => {
+    const url = urlBase+`PseudoAleatoreos/Uniforme?a=${a}&b=${b}&isInt=${entero}&u=${u}`
+    const resultado = await axios(url);
+    return resultado.data.number
   }
 
-  // useEffect(() => {
-  //   getPoisson();
-  //   getRamdomNumber();
-  //   getNormal();
-  //   getUniforme();
-  // }, [])
+  const getRandomInt = (min,max) => {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
 
-  const simular = () => {
-    let dias = 0, mes = 0, posiblesPerdidas = 0, contrata = "", frascosVendidos = 0, frascosTotales = 0, perdidasTotales = 0, ganancias = 0, consistencia = "", tipoLeche = "", bacteria = "";
+  const simular = async () => {
+    let dias = 0, mes = 0, posiblesPerdidas = 0, contrata = "", frascosVendidos = 0, frascosT = 0, perdidasTotales = 0, ganancias = 0, consistencia = "", tipoLeche = "", bacteria = "";
     while (mes < 6) {
-      let dia = getPoisson(7);
+      let dia = await getPoisson(7);
       dias += dia;
-      let nroAleatorio = getRamdomNumber(3);
-      let litros = getUniforme(50, 80, true, nroAleatorio);
-      nroAleatorio = getRamdomNumber(10);
-      if (nroAleatorio <= 30) {
+      let nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+      let litros = await getUniforme(50, 80, true, nroAleatorio);
+      nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+      if (nroAleatorio <= 0.30) {
         tipoLeche = `Leche pasteurizada - ${litros} L`
       } else {
         tipoLeche = `Leche no pasteurizada - ${litros} L`
       }
+      setLeche(tipoLeche);
 
-      obtenerLeche(tipoLeche);
-
-      nroAleatorio = getRamdomNumber(2);
-      if (nroAleatorio <= 60) {
+      nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+      if (nroAleatorio <= 0.60) {
         bacteria = "Lactobacillus Bulgaricus"
       } else {
         bacteria = "Streptococcus Thermophilus"
       }
-      obtenerBacteria(bacteria);
-      let temperatura = getNormal(45, 5);
-      obtenerTemperatura(temperatura);
-      nroAleatorio = getRamdomNumber(5);
-      let horaIncubacion = getUniforme(4, 6, true, nroAleatorio);
-      obtenerTiempo(horaIncubacion)
-      nroAleatorio = getRamdomNumber(1);
-      if (nroAleatorio <= 80) {
+     setBacteria(bacteria);
+      let temperatura = await getNormal(45, 5);
+      setTemperatura(temperatura);
+      nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+      let horaIncubacion = await getUniforme(4, 6, true, nroAleatorio);
+     setTiempo(horaIncubacion)
+      nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+      if (nroAleatorio <= 0.80) {
         consistencia = "Alcanzo la consistencia deseada";
-        obtenerPerdida(0)
+      setPerdida(0)
       } else {
         consistencia = "No se alcanzo la consistencia deseada";
         posiblesPerdidas = 150 * litros;
         perdidasTotales += posiblesPerdidas;
-        obtenerPerdida(posiblesPerdidas)
+      setPerdida(posiblesPerdidas)
       }
-      obtenerConsistencia(consistencia)
+    setConsistencia(consistencia)
       if (dias > 30) {
-        nroAleatorio = getRamdomNumber(6);
-        frascosVendidos = getUniforme(150, 200, true, nroAleatorio);
-        frascosTotales += frascosVendidos;
+        nroAleatorio = await getRamdomNumber(getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10),getRandomInt(1,10));
+        frascosVendidos = await getUniforme(150, 200, true, nroAleatorio);
+        frascosT += frascosVendidos;
         mes++;
         dias -= 30;
         ganancias = frascosVendidos * 280;
       }
-      obtenerGananciaTotales(ganancias)
-      obtenerPerdidasTotales(perdidasTotales)
+    setGananciaTotales(ganancias)
+    setPerdidasTotales(perdidasTotales)
+    setFrascosTotales(frascosT)
     }
-    obtenerFrascosTotales(frascosTotales)
       (ganancias > (2 * perdidasTotales)) ? contrata = "Conviene contratar otro empleado." : contrata = "No onviene contratar otro empleado."
     aumentarCantEmpleados(contrata);
+    
   }
 
   return (
@@ -161,7 +159,7 @@ const Simulador = () => {
                     disabled
                     value={consistencia}
                   ></input>
-                  <p className="mt-2">Posibles perdidas</p>
+                  <p className="mt-2">Perdidas</p>
                   <input
                     type="text"
                     className="form-control mb-3"
@@ -172,7 +170,7 @@ const Simulador = () => {
                 </div>
               </div>
               <div className="row mb-2">
-                <button type="button" class="btn btn-primary w-100" onClick={simular}>
+                <button type="button" className="btn btn-primary w-100" onClick={simular}>
                   Simular
                 </button>
               </div>
